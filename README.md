@@ -29,5 +29,6 @@ Soon!
 ##
 **I do not own any of these Python libraries, this program is like all in one for easier downloading. If creators of these libraries wouldn't like for these libraries to be in this program, let me know!**
 
-
-
+## Contact me
+E-Mail: wkazorphane@gmail.com
+Discord: wYkAzZy#1527
