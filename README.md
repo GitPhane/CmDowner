@@ -32,3 +32,4 @@ Soon!
 ## Contact me
 - E-Mail: wkazorphane@gmail.com
 - Discord: wYkAzZy#1527
+or open an issue
