@@ -17,7 +17,7 @@ How to run it?
     5. Download!
 
 ## System requirements
-- Any Python 3.x.x with pip
+- Any Python 3.7.x with pip or later
 - Windows 8.1 64-bit and up (32-bit people have to install FFmpeg manually for now) 
 - Network connection
 
