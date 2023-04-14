@@ -20,6 +20,7 @@ How to run it?
 - Any Python 3.7.x with pip or later
 - Windows 8.1 64-bit and up (32-bit people have to install FFmpeg manually for now) 
 - Network connection
+- At least 250MB of storage
 
 
 ## FAQ
