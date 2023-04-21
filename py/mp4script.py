@@ -1,36 +1,27 @@
-from pytube import YouTube
 import os
+import yt_dlp
 
-# Get the video URL from the user
-url = input("Enter the URL of the video you want to download: ")
+# Get the absolute path of the current script
+script_path = os.path.abspath(__file__)
 
-# Create a YouTube object
-yt = YouTube(url)
+# Construct the path to the parent directory of the script
+parent_dir = os.path.dirname(script_path)
 
-# Get available video streams
-streams = yt.streams.filter(progressive=True, file_extension='mp4')
+# Construct the default path to the downloads directory
+default_downloads_dir = os.path.join(parent_dir, '..', 'downloads', 'youtube', 'videos')
 
-# Display available resolutions to the user
-print("Available Resolutions:")
-for i, stream in enumerate(streams):
-    print(f"{i+1}. {stream.resolution}")
+# Prompt the user for the URL of the video to download
+video_url = input("Enter the URL of the video you want to download: ")
 
-# Ask the user to choose a resolution
-while True:
-    choice = int(input("Enter the number of the desired resolution: "))
-    if 1 <= choice <= len(streams):
-        break
-    else:
-        print("Invalid choice. Please enter a number between 1 and", len(streams))
+# Prompt the user for the download directory, defaulting to the default directory if no input is provided
+download_dir = input(f"Enter the directory to download to (default: {default_downloads_dir}): ") or default_downloads_dir
 
-# Get the selected stream and resolution
-stream = streams[choice - 1]
+# Make sure the download directory exists
+os.makedirs(download_dir, exist_ok=True)
 
-# Get the destination folder from the user
-destination = input("Enter the destination folder (leave blank for current directory): ") or '.'
-
-# Download the video
-stream.download(output_path=destination)
-
-# Print success message
-print(f"\n{yt.title} has been successfully downloaded to {os.path.abspath(destination)}")
+# Download the video and audio streams to the download directory
+ydl_opts = {'outtmpl': os.path.join(download_dir, '%(title)s.%(ext)s'), 'merge_output_format': 'mp4', 'format': 'bestvideo[height<=2160][ext=mp4]+bestaudio[ext=m4a]/best[height<=2160]/best'}
+with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+    ydl.download([video_url])
+    
+print("Download complete!")
