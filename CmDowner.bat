@@ -1,6 +1,7 @@
 @echo off
 color a
-title CmDowner 1.0
+title CmDowner 1.1   Where are you now: %cd%
+cd /d "%~dp0"
 
 :fmenu
 echo.                                              
@@ -12,37 +13,155 @@ echo ###      ##  ##   ##  ##   ##  ##   ######   ##  ##   ###      ##
 echo  #####   ##  ##    #####    ####    ##  ##   ##  ##    ####    ##                                                                  
 echo -----------------------------------------------------------------------
 echo                        WELCOME TO CMDOWNER
-echo                           version 1.0
-echo             Made with Python libs - spotdl, pytube, scdl
+echo                           version 1.1
+echo                      Compiled on 4/21/2023
+echo            Made with Python libs - spotdl, pytube, scdl, yt-dlp 
 echo.
+
+ver | findstr /i "5\.1\." > nul
+if %errorLevel% == 0 (
+    echo What are you even doing on XP??
+    pause
+    exit /b
+) else (
+    ver | findstr /i "6\.1\." > nul
+    if %errorLevel% == 0 (
+        echo Sorry, CmDowner doesn't support Windows 7.
+        pause
+        exit /b
+    ) else (
+        echo.
+    )
+)
+
+
+ping -n 1 -w 50 www.google.com >nul
+if errorlevel 1 (
+    echo Looks like you're offline, please check your internet connection and
+	pause
+	cls
+	goto :fmenu
+) else (
+    echo.
+)
+
+
 
 cd bin
 cd rcheck
 if exist "rcheck.check" (
     echo Welcome back! Flag file loaded at %cd%
 ) else (
+    cls
     echo Looks like this is your first time here.
-    echo Creating flag file...
-    echo this is a file that makes that the program knows its been ran before, do not delete this file > rcheck.check
+    echo Creating directories...
+    mkdir bin
+    echo bin
+    cd bin
+    mkdir rcheck
+    echo rcheck
+    cd rcheck
+    echo this is a file that makes that the program knows its been ran before, do not delete this file. Generated at %date% at %time% > rcheck.check
+    echo rcheck.check
+    cd /d "%~dp0"
+    mkdir downloads
+    echo downloads
+    cd downloads
+    mkdir youtube
+    echo youtube
+    mkdir spotify
+    echo spotify
+    mkdir soundcloud
+    echo soundcloud
+    mkdir files
+    echo files
+    cd youtube
+    mkdir music
+    echo ytmusic
+    mkdir videos
+    echo ytvideos
+   
+    cd /d "%~dp0"
+
+    timeout /t 3 >NUL
+    echo.
+    echo Relaunching..
+    timeout /t 1 >NUL 
+    cls
+    cd
+    goto :fmenu
 )
-echo.
+
+if exist "%~dp0/py" (
+    echo.
+) else (
+    cls
+    echo Sorry bud, the py folder is missing. Either you deleted it or something happened, however you will need to re-download the whole program again.
+    pause
+    start https://github.com/rover-95/cmdowner
+    exit
+)
+
+
+if exist "%~dp0/downloads" (
+    echo.
+) else (
+    cls
+    echo Why did you delete the downloads folder, what did it do to you?
+	timeout /t 1 >NUL
+	    cd /d "%~dp0"
+	mkdir downloads
+    echo downloads
+    cd downloads
+    mkdir youtube
+    echo youtube
+    mkdir spotify
+    echo spotify
+    mkdir soundcloud
+    echo soundcloud
+    cd youtube
+    mkdir music
+    echo ytmusic
+    mkdir videos
+    echo ytvideos
+	echo.
+	echo Relaunching...
+	timeout /t 2 >NUL
+	cls
+	goto :fmenu
+)
+
+
 echo Checking for Python...
 where python > nul 2>&1
 if %errorlevel% neq 0 (
-
+cls
 echo Python is not installed on this system. To use this script, install Python.
+cd bin
+cd rcheck
+del rcheck.check
+echo removing flg file
 pause
 exit
+cls
+
+
+python --version | findstr "3.[0-8]" > nul
+if %errorlevel% equ 0 (
+  echo Python 3.9 is required for the libraries to work, please install Python 3.9 or later.
+  pause
+  exit /b 1
+)
+
+
 ) else (
   for /f "usebackq tokens=2,*" %%a in (`python --version 2^>^&1`) do (
     echo Found Python version %%a %%b.
   )
 )
-
-
 echo.
 
-echo Checking for FFmpeg...
+
 setlocal EnableExtensions EnableDelayedExpansion
 
 rem Check if FFmpeg is already installed
@@ -67,14 +186,20 @@ if %errorLevel% == 0 (
 
 
 
-rem Download and extract FFmpeg
-set "FFMPEG_URL=https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip"
-set "FFMPEG_ZIP=%TEMP%\ffmpeg-master-latest-win64-gpl.zip"
-set "FFMPEG_DIR=%ProgramFiles%\FFmpeg\ffmpeg-master-latest-win64-gpl"
-set "FFMPEG_BIN_DIR=%FFMPEG_DIR%\ffmpeg-master-latest-win64-gpl\bin"
-set "FFMPEG_EXE=%FFMPEG_BIN_DIR%\ffmpeg.exe"
+rem Check if the operating system is 64-bit or 32-bit
+if "%PROCESSOR_ARCHITECTURE%" == "AMD64" (
+    echo 64-bit OS Found
+    set "FFMPEG_URL=https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip"
+    set "FFMPEG_ZIP=%TEMP%\FFmpeg.zip"
+    set "FFMPEG_DIR=%ProgramFiles%\"
+) else (
+    echo 32-bit OS Found
+    set "FFMPEG_URL=https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win32-gpl.zip"
+    set "FFMPEG_ZIP=%TEMP%\ffmpeg-master-latest-win32-gpl.zip"
+    set "FFMPEG_DIR=%ProgramFiles%\FFmpeg\ffmpeg-master-latest-win32-gpl"
+)
 
-echo Downloading FFmpeg... (This can take a while, you will only need to do this once)
+echo Downloading FFmpeg... (This can take a while, you will only need to do this once, 125MB)
 powershell -command "Invoke-WebRequest -Uri '%FFMPEG_URL%' -OutFile '%FFMPEG_ZIP%'"
 
 echo Extracting FFmpeg...
@@ -82,18 +207,13 @@ powershell -command "Expand-Archive -Path '%FFMPEG_ZIP%' -DestinationPath '%FFMP
 
 rem Add FFmpeg binary directory to the PATH environment variable
 echo Adding FFmpeg to PATH...
-setx PATH "%FFMPEG_BIN_DIR%;%PATH%"
+setx PATH "C:\Program Files\ffmpeg-master-latest-win64-gpl\bin;%PATH%"
 
 :continue
 echo FFmpeg is installed and ready to use.
-
-
-
-
-
+timeout /t 1 >NUL
 
 echo.
-
 echo Checking for spotdl...
 
 REM check if spotdl is installed
@@ -111,7 +231,8 @@ if %errorlevel% EQU 0 (
     cls
     echo Finished!
     goto :continue
-    timeout /t 1	
+    timeout /t 1 >NUL
+    cls	
 )
 
 echo.
@@ -139,6 +260,30 @@ if %errorlevel% EQU 0 (
 
 echo.
 
+echo Checking for yt-dlp...
+
+REM check if spotdl is installed
+python -c "import yt_dlp" > nul 2>&1
+
+REM if errorlevel is 0, pytube is installed
+if %errorlevel% EQU 0 (
+    echo Found yt-dlp!
+) else (
+    echo yt-dlp is not installed
+    cls
+    echo INSTALLING YT-DLP, DO NOT CLOSE THE WINDOW UNTIL THE INSTALLATION HAS FINISHED!!
+    timeout /t 1
+    pip install yt-dlp
+    cls
+    echo Finished!
+    goto :continue
+    timeout /t 1
+
+)
+
+
+echo.
+
 echo Checking for scdl...
 
 REM check if sc-d is installed
@@ -159,12 +304,21 @@ if %errorlevel% EQU 0 (
     timeout /t 1
 
 )
-
-timeout /t 3
 cls
 :menu
 cd /d "%~dp0"
 echo Currently in: %cd%
+
+
+if "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
+    echo 64-bit OS found
+) else (
+    echo 32-bit OS found
+)
+
+
+
+cd /d "%~dp0"
 echo.                                              
 echo                      ###                                               
 echo                      ###                                               
@@ -174,8 +328,9 @@ echo ###      ##  ##   ##  ##   ##  ##   ######   ##  ##   ###      ##
 echo  #####   ##  ##    #####    ####    ##  ##   ##  ##    ####    ##                                                               
 echo -----------------------------------------------------------------------
 echo                        WELCOME TO CMDOWNER
-echo                           version 1.0
-echo             Made with Python libs - spotdl, pytube, scdl
+echo                           version 1.1
+echo                       Compiled on 4/21/2023
+echo          Made with Python libs - spotdl, pytube, scdl, yt-dlp
 echo.
 
 setlocal EnableDelayedExpansion
@@ -185,24 +340,33 @@ echo 1. Download Spotify tracks/playlists
 echo 2. Download YouTube Songs (mp3)
 echo 3. Download YouTube Videos (mp4)
 echo 4. Download SoundCloud Songs
+echo 5. Download Files
+echo.
+echo 6. Freedom
+
 set /p choice="> "
+
 
 if "%choice%"=="1" (
     cls
+    cd /d "%~dp0"
+    cd downloads/spotify
     echo Selected Spotify Track/Playlist
-    set /p downdir="Enter a directory for download: "
+    set /p downdir="Enter a directory for download (leave blank for the CmDowner downloads path): "
     cd !downdir!
     echo Using !downdir!
     set /p spot_link="Enter Spotify link (song or playlist): "
     spotdl download !spot_link!
     echo.
-    cls
     echo Done
+    pause
+    cls
     goto :menu
     
 ) else if "%choice%"=="3" (
     cls
     call py\mp4script.py
+    pause
     cls 
     goto :menu
 
@@ -212,16 +376,26 @@ cls
 cls
 goto :menu
 
+) else if "%choice%"=="5" (
+cls
+ call py\filescript.py
+pause
+cls
+goto :menu
+
+) else if "%choice%"=="6" (
+cls
+echo Type "exit" to get to the main menu
+echo.
+cmd
+cls
+goto :menu
+
 ) else if "%choice%"=="2" (
 cls
     call py\mpscript.py
+    pause
     cls
-    echo Script Launched!
-    echo NOTE: If you previously downloaded something from Spotify with CMDOWNER you will need to restart the program (only do this if you get an error saying Cannot find specified file)
-    echo Going back to the selection menu in 10 seconds.
-    timeout /t 10 >nul
-    cls
-    echo Script Launched!
     goto :menu
     
     
@@ -229,4 +403,5 @@ cls
     echo Invalid selection. Please enter 1, 2 or 3.
     goto :menu
 )
+
 :end
