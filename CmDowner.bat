@@ -1,6 +1,6 @@
 @echo off
 color a
-title CmDowner 1.1   Where are you now: %cd%
+title CmDowner 1.2   Where are you now: %cd%
 cd /d "%~dp0"
 
 :fmenu
@@ -13,9 +13,9 @@ echo ###      ##  ##   ##  ##   ##  ##   ######   ##  ##   ###      ##
 echo  #####   ##  ##    #####    ####    ##  ##   ##  ##    ####    ##                                                                  
 echo -----------------------------------------------------------------------
 echo                        WELCOME TO CMDOWNER
-echo                           version 1.1
-echo                      Compiled on 4/21/2023
-echo            Made with Python libs - spotdl, pytube, scdl, yt-dlp 
+echo                           version 1.2
+echo                      Compiled on 5/25/2023
+echo             Made with Python libs - spotdl, scdl, yt-dlp 
 echo.
 
 ver | findstr /i "5\.1\." > nul
@@ -58,6 +58,8 @@ if exist "rcheck.check" (
     mkdir bin
     echo bin
     cd bin
+    mkdir preset
+    echo preset
     mkdir rcheck
     echo rcheck
     cd rcheck
@@ -86,17 +88,17 @@ if exist "rcheck.check" (
     timeout /t 3 >NUL
     echo.
     echo Relaunching..
-    timeout /t 1 >NUL 
+    timeout /t 2 >NUL 
     cls
-    cd
-    goto :fmenu
+    cd py
+    restart-thingy.bat
 )
 
 if exist "%~dp0/py" (
     echo.
 ) else (
     cls
-    echo Sorry bud, the py folder is missing. Either you deleted it or something happened, however you will need to re-download the whole program again.
+    echo The py folder is missing! Please re-download the program.
     pause
     start https://github.com/rover-95/cmdowner
     exit
@@ -130,8 +132,16 @@ if exist "%~dp0/downloads" (
 	cls
 	goto :fmenu
 )
-
-
+cd /d "%~dp0"
+cd bin
+cd preset
+IF EXIST preset.bat (
+    call preset.bat
+    echo Your preset is loaded!
+) else (
+    echo Preset file not found!
+)
+echo.
 echo Checking for Python...
 where python > nul 2>&1
 if %errorlevel% neq 0 (
@@ -144,6 +154,7 @@ echo removing flg file
 pause
 exit
 cls
+
 
 
 python --version | findstr "3.[0-8]" > nul
@@ -160,6 +171,19 @@ if %errorlevel% equ 0 (
   )
 )
 echo.
+
+
+@echo off
+where python > nul 2>&1
+if %errorlevel% equ 0 (
+    rem Python is in the PATH.
+) else (
+    cls
+	echo Python is not added to PATH
+	pause
+	exit
+)
+
 
 
 setlocal EnableExtensions EnableDelayedExpansion
@@ -187,6 +211,7 @@ if %errorLevel% == 0 (
 
 
 rem Check if the operating system is 64-bit or 32-bit
+rem fun fact: it doesn't matter if its 64 or 32 bit
 if "%PROCESSOR_ARCHITECTURE%" == "AMD64" (
     echo 64-bit OS Found
     set "FFMPEG_URL=https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip"
@@ -194,12 +219,12 @@ if "%PROCESSOR_ARCHITECTURE%" == "AMD64" (
     set "FFMPEG_DIR=%ProgramFiles%\"
 ) else (
     echo 32-bit OS Found
-    set "FFMPEG_URL=https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win32-gpl.zip"
-    set "FFMPEG_ZIP=%TEMP%\ffmpeg-master-latest-win32-gpl.zip"
-    set "FFMPEG_DIR=%ProgramFiles%\FFmpeg\ffmpeg-master-latest-win32-gpl"
+    set "FFMPEG_URL=https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip"
+    set "FFMPEG_ZIP=%TEMP%\FFmpeg.zip"
+    set "FFMPEG_DIR=%ProgramFiles%\"
 )
 
-echo Downloading FFmpeg... (This can take a while, you will only need to do this once, 125MB)
+echo Downloading FFmpeg... (This can take a while, you will only need to do this once, FFmpeg is about 125MB)
 powershell -command "Invoke-WebRequest -Uri '%FFMPEG_URL%' -OutFile '%FFMPEG_ZIP%'"
 
 echo Extracting FFmpeg...
@@ -233,29 +258,6 @@ if %errorlevel% EQU 0 (
     goto :continue
     timeout /t 1 >NUL
     cls	
-)
-
-echo.
-
-echo Checking for pytube...
-
-REM check if spotdl is installed
-python -c "import pytube" > nul 2>&1
-
-REM if errorlevel is 0, pytube is installed
-if %errorlevel% EQU 0 (
-    echo Found pytube!
-) else (
-    echo pytube is not installed
-    cls
-    echo INSTALLING PYTUBE, DO NOT CLOSE THE WINDOW UNTIL THE INSTALLATION HAS FINISHED!!
-    timeout /t 1
-    pip install pytube
-    cls
-    echo Finished!
-    goto :continue
-    timeout /t 1
-
 )
 
 echo.
@@ -309,6 +311,14 @@ cls
 cd /d "%~dp0"
 echo Currently in: %cd%
 
+cd bin
+cd preset
+IF EXIST preset.bat (
+    call preset.bat
+    echo Preset found!
+) else (
+    echo Preset not found!
+)
 
 if "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
     echo 64-bit OS found
@@ -328,9 +338,9 @@ echo ###      ##  ##   ##  ##   ##  ##   ######   ##  ##   ###      ##
 echo  #####   ##  ##    #####    ####    ##  ##   ##  ##    ####    ##                                                               
 echo -----------------------------------------------------------------------
 echo                        WELCOME TO CMDOWNER
-echo                           version 1.1
-echo                       Compiled on 4/21/2023
-echo          Made with Python libs - spotdl, pytube, scdl, yt-dlp
+echo                           version 1.2
+echo                       Compiled on 5/25/2023
+echo            Made with Python libs - spotdl, scdl, yt-dlp
 echo.
 
 setlocal EnableDelayedExpansion
@@ -343,6 +353,7 @@ echo 4. Download SoundCloud Songs
 echo 5. Download Files
 echo.
 echo 6. Freedom
+echo 7. Make a preset file
 
 set /p choice="> "
 
@@ -390,6 +401,7 @@ echo.
 cmd
 cls
 goto :menu
+  
 
 ) else if "%choice%"=="2" (
 cls
@@ -397,10 +409,46 @@ cls
     pause
     cls
     goto :menu
-    
-    
+
+) else if "%choice%"=="7" (
+cls
+echo Presets can be used for commands that will be started when you launch CmDowner. For example, you don't like the green text? Change it to something you like! (type "color" in the freedom mode to see all the colors avalible)
+echo To use presets, you will need to edit a file located in bin/preset/preset.bat. Simply type out a command that you want to be ran on startup.
+echo.
+cd /d "%~dp0"
+cd bin/preset
+IF EXIST preset.bat (
+    CHOICE /M "It seems like the preset file already exists! Do you want to overwrite it?"
+
+IF ERRORLEVEL 2 (
+    cd /d "%~dp0"
+    cls
+    goto :menu
 ) else (
-    echo Invalid selection. Please enter 1, 2 or 3.
+    del preset.bat
+	echo rem This is a preset file created by CmDowner on %date%, write your code on a next line > preset.bat
+	cd /d "%~dp0"
+	echo Successfully overwritted preset.bat, CmDowner will restart if you
+	pause
+	cd py
+	    cls
+	call restart-thingy.bat
+)
+
+) else (
+    echo rem This is a preset file created by CmDowner on %date%, write your code on a next line > preset.bat
+    echo A file called preset.bat has been created in bin/preset, edit it and
+	pause
+	cd /d "%~dp0"
+	cd py
+	    cls
+	call restart-thingy.bat
+)
+cls
+goto :menu
+
+) else (
+    echo Invalid selection.
     goto :menu
 )
 

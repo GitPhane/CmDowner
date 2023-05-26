@@ -1,5 +1,14 @@
 @echo off
 color a
+cd bin
+cd preset
+IF EXIST preset.bat (
+    echo Please wait...
+    call preset.bat
+	cls
+) else (
+    echo Preset not found, you can make a preset on the CmDowner's main menu.
+)
 title CmDowner's SoundCloud Downloader    Currently in: %cd%
 echo Currenly in: look up
 echo.
@@ -11,8 +20,14 @@ echo Enter your selection:
 echo 1. Download song
 echo 2. Download playlist
 echo.
-echo 3. Return to CmDowner
+echo 0. Return to CmDowner
 set /p choice="> "
+
+) else if "%choice%"=="0" (
+cd ..
+cls
+CmDowner.bat
+)
 
 if "%choice%"=="1" (
     cls
@@ -32,13 +47,6 @@ if "%choice%"=="1" (
     goto :menu
 )
 
-) else if "%choice%"=="3" (
-cd ..
-cls
-cmdowner.bat
-
-)
-
 ) else if "%choice%"=="2" (
     cls
     echo Selected Playlist
@@ -56,7 +64,6 @@ cmdowner.bat
 cls
     goto :menu
 )
-
 
     
 ) else (
