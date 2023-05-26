@@ -40,10 +40,6 @@ No problem, download the py folder [here](https://cmdowner.vercel.app) and follo
 ## Found a bug?
 Everybody makes mistakes, report it in the "Issues" tab
 
-## License
-
-This project is licensed under [MIT](https://choosealicense.com/licenses/mit/)
-
 ## 💬Contact me
 - 📩E-Mail: wkazorphane@gmail.com
 - 🍴or open an issue
